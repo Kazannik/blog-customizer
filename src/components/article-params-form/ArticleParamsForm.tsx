@@ -14,10 +14,11 @@ import {
 	backgroundColors,
 	contentWidthArr,
 	OptionType,
-} from '../../constants/articleProps';
+} from 'src/constants/articleProps';
 
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import clsx from 'clsx';
+import { useClose } from 'src/hooks/useClose';
 
 type ArticleParamsForm = {
 	formState: {
@@ -41,49 +42,25 @@ type ArticleParamsForm = {
 };
 
 export function ArticleParamsForm(props: ArticleParamsForm) {
-	const [state, setState] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 
-	const toggleState = () => {
-		return setState(!state);
+	const handleClick = () => {
+		return setIsOpen(!isOpen);
 	};
 
 	const rootRef = useRef<HTMLFormElement | null>(null);
 
-	useEffect(() => {
-		if (!state) return;
-
-		function handleOutsideClick(event: MouseEvent) {
-			const { target } = event;
-			const isOutsideClick =
-				target instanceof Node &&
-				rootRef.current &&
-				!rootRef.current.contains(target);
-
-			if (isOutsideClick) {
-				toggleState();
-			}
-		}
-
-		const handleEscape = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') {
-				toggleState();
-			}
-		};
-
-		document.addEventListener('keydown', handleEscape);
-		document.addEventListener('mousedown', handleOutsideClick);
-
-		return () => {
-			document.removeEventListener('keydown', handleEscape);
-			document.removeEventListener('mousedown', handleOutsideClick);
-		};
-	}, [state]);
+	useClose({
+		isOpen,
+		onClose: () => setIsOpen(false),
+		rootRef: rootRef,
+	});
 
 	return (
 		<>
-			<ArrowButton state={state} toggleState={toggleState} />
+			<ArrowButton state={isOpen} onClick={handleClick} />
 			<aside
-				className={clsx(styles.container, { [styles.container_open]: state })}>
+				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
 				<form className={styles.form} onSubmit={props.submitForm} ref={rootRef}>
 					<Text as='h2' size={31} weight={800} uppercase>
 						Задайте параметры

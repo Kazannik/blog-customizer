@@ -9,14 +9,14 @@ export type OnClick = () => void;
 
 export type ArrowButtonProps = {
 	state: boolean;
-	toggleState: OnClick;
+	onClick: OnClick;
 };
 
 export const ArrowButton = (props: ArrowButtonProps) => {
 	return (
 		/* Не забываем указаывать role и aria-label атрибуты для интерактивных элементов */
 		<div
-			onClick={props.toggleState}
+			onClick={props.onClick}
 			role='button'
 			aria-label='Открыть/Закрыть форму параметров статьи'
 			tabIndex={0}
